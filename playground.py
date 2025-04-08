@@ -1,6 +1,7 @@
 """
-Extract metadata from scientific articles in PDF format using Ollama's model.
+Copy of main.py for testing purposes.
 """
+
 import os
 import pandas as pd
 
