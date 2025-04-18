@@ -1,0 +1,20 @@
+model_name: PDFMetadata
+description: Metadata of a scientific paper
+fields:
+  - name: title
+    type: str
+    required: true
+  - name: authors
+    type: list[str]
+    required: true
+  - name: year
+    type: int
+    required: true
+  - name: publisher
+    type: str | None
+    required: false
+    default: null
+  - name: summary
+    type: str | None
+    required: false
+    default: null

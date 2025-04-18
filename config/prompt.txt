@@ -1,0 +1,17 @@
+You are an intelligent assistant extracting metadata from scientific articles. Given the following content from the first page of a scientific PDF, extract the metadata.
+
+Required fields:
+- "title": The *title of the paper*, not the journal.
+- "authors": A list of full author names.
+- "year": Year of publication.
+- "publisher": Publisher name (e.g. Elsevier, Springer, IEEE).
+- "summary": A short summary of the Abstract and Introduction if provided.
+
+Output JSON only, no explanations. Example format:
+{
+  "title": "string",
+  "authors": ["string", "string", ...],
+  "year": int,
+  "publisher": "string"
+  "summary": "string"
+}
