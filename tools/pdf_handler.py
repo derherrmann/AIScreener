@@ -2,8 +2,6 @@ import os
 import pymupdf
 import pymupdf4llm
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
-
 
 # def get_pdfs(path: str) -> list[str]:
 #     """
@@ -66,6 +64,7 @@ def get_pdf_text(pdf_path: str, save: bool = None) -> list:
 
 # DEBUG
 # def main():
+#     DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
 #     PDF_PATH = os.path.join(os.path.dirname(__file__), 'data', 'scpaper1.pdf')
 #     md = get_pdf_md(PDF_PATH)
 #     txt = get_pdf_text(PDF_PATH)

@@ -5,7 +5,7 @@ Required fields:
 - "authors": A list of full author names.
 - "year": Year of publication.
 - "publisher": Publisher name (e.g. Elsevier, Springer, IEEE).
-- "summary": A short summary of the Abstract and Introduction if provided.
+- "summary": A short summary of the Abstract and Introduction only if provided otherwise leave blank.
 
 Output JSON only, no explanations. Example format:
 {

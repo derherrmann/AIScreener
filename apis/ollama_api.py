@@ -3,7 +3,7 @@ from ollama import ChatResponse
 from pydantic import BaseModel
 
 
-def build_response(prompt: str, text: str, metadata: BaseModel) -> ChatResponse:
+def build_response(prompt: str, text: str, model: object) -> ChatResponse:
     response: ChatResponse = chat(
         model='gemma3:12b',
         messages=[
@@ -19,7 +19,7 @@ def build_response(prompt: str, text: str, metadata: BaseModel) -> ChatResponse:
             {
                 'role': 'user', }
         ],
-        format=metadata.model_json_schema(),
+        format=model.model_json_schema(),
         options={'temperature': 0},
     )
     return response
