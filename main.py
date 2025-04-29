@@ -1,14 +1,12 @@
-"""
-Extract metadata from scientific articles in PDF format using Ollama's model.
-"""
 import os
-import re
 
 import pandas as pd
 
 from pydantic import ValidationError
 
 from apis.ollama_api import build_response
+from tools.dataframe_handler import write_df, convert_list2str, read_df
+from tools.helper import CLRS, remove_invalid_chars, logging, ct
 from tools.prompt_handler import read_prompt
 from tools.class_parser import get_model, Test
 from tools.pdf_handler import get_pdf_text, get_pdfs
@@ -18,15 +16,12 @@ PROMPT_PATH = os.path.join(os.path.dirname(__file__), 'config', 'prompt.txt')
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'config', 'model.yaml')
 
 
-def remove_invalid_chars(s):
-    return re.sub(r'[<>:"/\\|?*]', '', s)
-
-
 def main():
     """
     Main function to extract metadata from PDF files.
     :return:
     """
+    loaded_metadata = read_df(os.path.join(DATA_PATH, 'metadata.csv'))
     prompt = read_prompt(PROMPT_PATH)
     model = get_model(MODEL_PATH)
     test_model = Test
@@ -34,9 +29,15 @@ def main():
 
     big_data = list()
     for pdf in pdfs:
-        print(f'Processing PDF: {pdf}')
+        if not loaded_metadata.empty:
+            filename = os.path.basename(pdf)  # ToDo: Get only filename without extension!
+            titles = loaded_metadata['title'].tolist()
+            if filename in titles:
+                logging.info(f'{ct()}{CLRS.WARNING}File {pdf} already processed. Skipping.{CLRS.ENDC}')
+                continue
+        logging.info(f'{ct()}{CLRS.OKGREEN}Processing PDF: {pdf}{CLRS.ENDC}')
         pages = get_pdf_text(pdf)
-        response_txt = build_response(prompt, pages[0], test_model)
+        response_txt = build_response(prompt, pages[0], model)
         try:
             metadata = model.model_validate_json(response_txt['message']['content'])
             print(metadata)
@@ -47,13 +48,14 @@ def main():
             try:
                 os.rename(pdf, os.path.join(DATA_PATH, cleaned_title + '.pdf'))
             except FileExistsError:
-                print(f'File {cleaned_title}.pdf already exists. Skipping rename.')
+                logging.error(f'{ct()}{CLRS.FAIL}File {cleaned_title}.pdf already exists. Skipping rename.{CLRS.ENDC}')
+            tmp_df = pd.DataFrame(big_data)
+            write_df(DATA_PATH, convert_list2str(tmp_df, 'authors'))
         except ValidationError as e:
-            print(f'Parsing error: {e}')
+            logging.error(f'{ct()}{CLRS.FAIL}Parsing error: {e}{CLRS.ENDC}')
 
     df = pd.DataFrame(big_data)
-    df['authors'] = df['authors'].apply(lambda x: ', '.join(x))
-    df.to_csv(os.path.join(DATA_PATH, 'metadata.csv'), sep=';', index=False)
+    write_df(DATA_PATH, convert_list2str(df, 'authors'))
 
 
 if __name__ == '__main__':
