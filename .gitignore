@@ -1,5 +1,8 @@
 # Custom
 data/
+.idea/*.xml
+.idea/*.iml
+.idea/*
 .idea/
 .vscode/
 .DS_Store
