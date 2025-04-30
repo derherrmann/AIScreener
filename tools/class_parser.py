@@ -30,7 +30,7 @@ def read_yaml(path: str) -> dict:
         return yaml.safe_load(yaml_file)
 
 
-def build_model_from_dict(data: dict) -> BaseModel:
+def build_model_from_dict(data: dict) -> type[BaseModel]:
     """
     Build a pydantic model from a dictionary.
     :param data:
@@ -56,7 +56,7 @@ def build_model_from_dict(data: dict) -> BaseModel:
     return model
 
 
-def get_model(path: str) -> BaseModel:
+def get_model(path: str) -> type[BaseModel]:
     """
     Get a pydantic model from a YAML file.
     :param path: Path to the YAML file.
