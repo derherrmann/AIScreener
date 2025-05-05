@@ -5,7 +5,7 @@ import pandas as pd
 from tools.helper import CLRS, logging, ct
 
 
-def read_df(path: str) -> pd.DataFrame | None:
+def read_df(path: str) -> pd.DataFrame:
     """
     Read a CSV file into a DataFrame.
     :param path: Path to the CSV file.
@@ -16,7 +16,7 @@ def read_df(path: str) -> pd.DataFrame | None:
         return df
     except FileNotFoundError:
         logging.error(f'{ct()}{CLRS.FAIL}File {path} not found.{CLRS.ENDC}')
-        return None
+        return pd.DataFrame()
     except PermissionError:
         logging.error(f'{ct()}{CLRS.FAIL}Permission denied for file {path}.{CLRS.ENDC}')
         exit(1)
@@ -34,7 +34,7 @@ def write_df(path: str, df: pd.DataFrame) -> None:
     full_path = os.path.join(path, 'metadata.csv')
     try:
         df.to_csv(full_path, sep=';', index=False)
-        logging.info(f'{ct()}:{CLRS.OKGREEN}File {path} written successfully.{CLRS.ENDC}')
+        logging.info(f'{ct()}:{CLRS.OKGREEN}File {full_path} written successfully.{CLRS.ENDC}')
     except PermissionError:
         logging.error(f'{ct()}:{CLRS.FAIL}Permission denied for file {full_path}.\n'
                       f'Retrying with different naming.{CLRS.ENDC}')

@@ -24,17 +24,20 @@ def main():
     loaded_metadata = read_df(os.path.join(DATA_PATH, 'metadata.csv'))
     prompt = read_prompt(PROMPT_PATH)
     model = get_model(MODEL_PATH)
-    test_model = Test
+    # test_model = Test
     pdfs = get_pdfs(DATA_PATH)
+    titles = list()
+
+    if not loaded_metadata.empty:
+        loaded_metadata['title'] = loaded_metadata['title'].apply(lambda x: remove_invalid_chars(x))
+        titles = loaded_metadata['title'].tolist()
 
     big_data = list()
     for pdf in pdfs:
-        if not loaded_metadata.empty:
-            filename = os.path.basename(pdf)  # ToDo: Get only filename without extension!
-            titles = loaded_metadata['title'].tolist()
-            if filename in titles:
-                logging.info(f'{ct()}{CLRS.WARNING}File {pdf} already processed. Skipping.{CLRS.ENDC}')
-                continue
+        filename = os.path.splitext(os.path.basename(pdf))[0]
+        if filename in titles:
+            logging.info(f'{ct()}{CLRS.WARNING}{filename} already processed. Skipping.{CLRS.ENDC}')
+            continue
         logging.info(f'{ct()}{CLRS.OKGREEN}Processing PDF: {pdf}{CLRS.ENDC}')
         pages = get_pdf_text(pdf)
         response_txt = build_response(prompt, pages[0], model)
@@ -50,12 +53,11 @@ def main():
             except FileExistsError:
                 logging.error(f'{ct()}{CLRS.FAIL}File {cleaned_title}.pdf already exists. Skipping rename.{CLRS.ENDC}')
             tmp_df = pd.DataFrame(big_data)
-            write_df(DATA_PATH, convert_list2str(tmp_df, 'authors'))
+            df = pd.concat([loaded_metadata, convert_list2str(tmp_df, 'authors')], ignore_index=True).drop_duplicates(
+                subset=['title'])
+            write_df(DATA_PATH, df)
         except ValidationError as e:
             logging.error(f'{ct()}{CLRS.FAIL}Parsing error: {e}{CLRS.ENDC}')
-
-    df = pd.DataFrame(big_data)
-    write_df(DATA_PATH, convert_list2str(df, 'authors'))
 
 
 if __name__ == '__main__':

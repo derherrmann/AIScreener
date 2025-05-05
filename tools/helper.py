@@ -2,6 +2,8 @@ import logging
 import re
 from datetime import datetime, timezone, timedelta
 
+import pandas as pd
+
 tz = timezone(timedelta(hours=2))  # 'Europe/Zurich'
 logging.basicConfig(level=logging.DEBUG)
 
@@ -27,4 +29,9 @@ def ct() -> str:
 
 
 def remove_invalid_chars(s):
-    return re.sub(r'[<>:"/\\|?*]', '', s)
+    """
+    Remove invalid characters from a string.
+    """
+    if pd.isna(s):
+        return s
+    return re.sub(r'[<>:"/\\|?*]', '', str(s))
